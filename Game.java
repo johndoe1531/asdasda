@@ -8,7 +8,17 @@ import java.util.*;
 public class Game extends JPanel {
     static String correctAnswer;
     static int scoreCounter = 0;
-
+    static boolean awaitingSolution = false;
+    static String asciiArt() {
+        
+        if(scoreCounter == 3) {
+            return " + \n";
+        }
+        if(scoreCounter == 5) {
+            return " + \n";
+        }
+        else return "";
+    }
     static String rEquation() {
         int x;
         int y;
@@ -22,7 +32,7 @@ public class Game extends JPanel {
 
         return result;
     }
-     static String interpretCommand(String input, boolean awaitingSolution) {
+     static String interpretCommand(String input) {
             
             switch (input) {
                 case "s":
@@ -39,10 +49,10 @@ public class Game extends JPanel {
                     if(awaitingSolution){
                         if (input.equals(correctAnswer)) {
                         scoreCounter++;
-                        awaitingSolution = false;
+                        
                         return "Correct! \n Solve: " + rEquation() + "\n";
                     } else {
-                        return "Incorrect" + correctAnswer;
+                        return "Incorrect!";
                     }
                     }else{
                      return "Unknown command";
@@ -53,19 +63,24 @@ public class Game extends JPanel {
 
     public static void main(String[] args) {
         String input;
-        boolean awaitingSolution = false;
         JFrame frame = new JFrame("Command Prompt");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 200);
+        frame.setSize(800, 400);
         frame.setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
-        JLabel label = new JLabel("Enter command");
-        JTextField textField = new JTextField(20);
-        JTextArea textArea = new JTextArea(5, 20);
+        JTextField textField = new JTextField(50);
+        JTextArea textArea = new JTextArea(20, 60);
         JScrollPane scrollPane = new JScrollPane(textArea);
-
-        panel.add(label);
+        textArea.setBackground(Color.BLACK);
+        textArea.setForeground(Color.GREEN);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        textArea.setEditable(false);
+        textArea.setBorder(null);
+        textField.setCaretColor(Color.GREEN);
+        textField.setBorder(null);
+        textField.setBackground(Color.BLACK);
+        textField.setForeground(Color.GREEN);
         panel.add(textField);
         panel.add(scrollPane);
 
@@ -75,14 +90,18 @@ public class Game extends JPanel {
                 String command = textField.getText();
                 textArea.append(command + "\n");
                 textField.setText("");
-               textArea.append(interpretCommand(command, awaitingSolution));
+               textArea.append(interpretCommand(command) + "\n");
+               textArea.append(asciiArt());
                 // Redirect output to JTextArea
                 PrintStream printStream = new PrintStream(new CustomOutputStream(textArea));
                 System.setOut(printStream);
             }
         });
-
-        frame.add(panel);
+        
+        frame.setLayout(new BorderLayout());
+        frame.add(scrollPane, BorderLayout.CENTER);
+        frame.add(textField, BorderLayout.SOUTH);
+        
         frame.setVisible(true);
 
         System.out.println("Welcome to Math Game, press 's' to start and 'x' to exit");
@@ -106,3 +125,4 @@ class CustomOutputStream extends OutputStream {
         textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 }
+
